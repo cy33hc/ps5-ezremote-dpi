@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in address;
     int addrlen = sizeof(address);
     char buffer[BUF_SIZE] = {0};
+    char *pos;
     PlayGoInfo playgo_info;
     SceAppInstallPkgInfo pkg_info;
     MetaInfo metainfo;
@@ -102,14 +103,15 @@ int main(int argc, char *argv[])
         int valread = recv(new_socket, buffer, BUF_SIZE, 0);            
         if (valread > 0)
         {
-            if (buffer[strlen(buffer)-2] == '\r')
+            pos = strchr(buffer, '\r');
+            if (pos != nullptr)
             {
-                buffer[strlen(buffer)-2] = 0;
-                buffer[strlen(buffer)-1] = 0;
+                *pos = 0;
             }
-            else if (buffer[strlen(buffer)-1] == '\n')
+            pos = strchr(buffer, '\n');
+            if (pos != nullptr)
             {
-                buffer[strlen(buffer)-1] = 0;
+                *pos = 0;
             }
 
             if (strncmp(buffer, "stop", 4) == 0)
