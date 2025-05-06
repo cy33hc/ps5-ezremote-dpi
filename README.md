@@ -11,3 +11,7 @@ A payload that runs in the background to receive package install request similar
    ```bash
    echo 'https://example.org/game.pkg' | nc PS5_IP 9040
    ```
+ - You can stop background process by send the "stop" cmd
+   ```bash
+   echo 'stop' | nc PS5_IP 9040
+   ```
