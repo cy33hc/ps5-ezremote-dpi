@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <unistd.h>
 
 #include "sceAppInstUtil.h"
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
-        notify("socket failed");
+        notify("ezRemote DPI create socket failed");
         return -1;
     }
 
@@ -85,14 +86,20 @@ int main(int argc, char *argv[])
         new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen);
         if (new_socket < 0)
         {
-            notify("ezRemote DPI Accept client connection failed");
             continue;
         }
+
+        timeval tv;
+        tv.tv_sec = 1;
+        tv.tv_usec = 0;
+        setsockopt(new_socket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const void *>(&tv), sizeof(tv));
+        int yes = 1;
+		setsockopt(new_socket, IPPROTO_TCP, TCP_NODELAY, (char *) &yes, sizeof(int));
 
         // Reading the request from the client
         memset(buffer, 0, sizeof(buffer));
         ret = -1;
-        int valread = read(new_socket, buffer, BUF_SIZE);            
+        int valread = recv(new_socket, buffer, BUF_SIZE, 0);            
         if (valread > 0)
         {
             if (buffer[strlen(buffer)-2] == '\r')
@@ -135,7 +142,7 @@ int main(int argc, char *argv[])
             ret = sceAppInstUtilInstallByPackage(&metainfo, &pkg_info, &playgo_info);
             if (ret != 0)
             {
-                notify("Package install failed with\nError Code: %d\n", ret);
+                notify("Package install failed with\nError Code: 0x%08X\n", ret);
             }        
         }
 
