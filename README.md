@@ -15,5 +15,5 @@ A payload that runs in the background to receive package install request similar
    - Create a text file with the URL in content. Make sure there is no spaces before and after the URL.
    - Then use etaHEN [send_payload.ps1](https://github.com/etaHEN/etaHEN/blob/main/send_payload.ps1) powershell script to send the URL to install
      ```bash
-     powershell send_payload.ps1 -Payload "C:\path\to\your.pkg" -IP "192.168.xxx.xxx" -Port 9040
+     powershell send_payload.ps1 -Payload "https://example.org/game.pkg" -IP "192.168.xxx.xxx" -Port 9040
      ```
